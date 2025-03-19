@@ -1,16 +1,26 @@
+using DotNetEnv;
+using task5.Services;
+using task5.Services.IServices;
+
 var builder = WebApplication.CreateBuilder(args);
+
+Env.Load(".env");
 
 builder.Services.AddControllersWithViews()
     .AddViewLocalization()
     .AddDataAnnotationsLocalization();
-
-var app = builder.Build();
-
+builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
 var supportedCultures = new[] { "en-US", "fr-FR", "ru-RU" };
 var localizationOptions = new RequestLocalizationOptions()
     .SetDefaultCulture("en-US")
     .AddSupportedCultures(supportedCultures)
     .AddSupportedUICultures(supportedCultures);
+
+builder.Services.AddHttpClient();
+
+builder.Services.AddScoped<IBookService, BookService>();
+
+var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())
 {
@@ -27,6 +37,6 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=Book}/{action=Index}/{id?}");
 
 app.Run();
