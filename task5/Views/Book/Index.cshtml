@@ -1,0 +1,32 @@
+﻿@model IEnumerable<task5.Models.BookViewModel>
+
+@{
+    ViewData["Title"] = "Books";
+}
+
+<body>
+    <div class="container mt-4">
+        <h1 class="mb-4">Books</h1>
+
+        @await Html.PartialAsync("_Menu")
+
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>ISBN</th>
+                    <th>Title</th>
+                    <th>Author</th>
+                    <th>Publisher</th>
+                </tr>
+            </thead>
+            <tbody id="book-list">
+            </tbody>
+        </table>
+
+        <div id="loading" class="text-center" style="display: none;">Loading...</div>
+    </div>
+
+    <script src="~/js/loadBooks.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0/js/bootstrap.bundle.min.js"></script>
+</body>
