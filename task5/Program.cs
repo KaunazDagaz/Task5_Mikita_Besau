@@ -19,7 +19,6 @@ var localizationOptions = new RequestLocalizationOptions()
 builder.Services.AddHttpClient();
 
 builder.Services.AddScoped<IBookService, BookService>();
-builder.Services.AddScoped<IReviewGeneratorService, ReviewGeneratorService>();
 
 var app = builder.Build();
 
