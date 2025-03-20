@@ -1,4 +1,5 @@
 ﻿using DotNetEnv;
+using MathNet.Numerics.Distributions;
 using System.Globalization;
 using System.Text.Json;
 using task5.Models;
@@ -11,17 +12,18 @@ namespace task5.Services
         private readonly HttpClient httpClient;
         private readonly static string culture = CultureInfo.CurrentCulture.Name;
         private readonly static string baseUrl = Env.GetString("FAKER_API_BASE_URL");
+        private readonly Random random = new Random();
 
         public BookService(HttpClient httpClient)
         {
             this.httpClient = httpClient;
         }
 
-        public async Task<List<BookViewModel>> GenerateBooksAsync(int count, int seed)
+        public async Task<List<BookViewModel>> GenerateBooksAsync(int count, int seed, float avgLikes)
         {
-            string requestUrl = $"{baseUrl}?_quantity={count}&_locale={culture}&_seed={seed}&_fields=isbn,title,author,publisher";
+            string requestUrl = $"{baseUrl}/books?_quantity={count}&_locale={culture}&_seed={seed}";
             string jsonResponse = await FetchDataAsync(requestUrl);
-            return ParseBooks(jsonResponse);
+            return ParseBooks(jsonResponse, avgLikes);
         }
 
         private async Task<string> FetchDataAsync(string requestUrl)
@@ -31,18 +33,23 @@ namespace task5.Services
             return await response.Content.ReadAsStringAsync();
         }
 
-        private List<BookViewModel> ParseBooks(string jsonResponse)
+        private List<BookViewModel> ParseBooks(string jsonResponse, float avgLikes)
         {
             using var jsonDocument = JsonDocument.Parse(jsonResponse);
             var root = jsonDocument.RootElement;
             if (root.TryGetProperty("data", out JsonElement dataElement) && dataElement.ValueKind == JsonValueKind.Array)
             {
-                var filteredBooks = new List<BookViewModel>();
+                var books = new List<BookViewModel>();
                 foreach (var element in dataElement.EnumerateArray())
                 {
-                    filteredBooks.Add(MapJsonToBookViewModel(element));
+                    var book = MapJsonToBookViewModel(element);
+                    int baseLikes = (int)avgLikes;
+                    float extraProbability = avgLikes - baseLikes;
+                    book.Likes = baseLikes;
+                    if (random.NextDouble() < extraProbability) book.Likes++;
+                    books.Add(book);
                 }
-                return filteredBooks;
+                return books;
             }
             else throw new JsonException("Unexpected JSON format: 'data' property not found or is not an array.");
         }
@@ -54,7 +61,7 @@ namespace task5.Services
                 ISBN = element.GetProperty("isbn").GetString() ?? string.Empty,
                 Title = element.GetProperty("title").GetString()?.TrimEnd('.') ?? string.Empty,
                 Author = element.GetProperty("author").GetString() ?? string.Empty,
-                Publisher = element.GetProperty("publisher").GetString() ?? string.Empty
+                Publisher = element.GetProperty("publisher").GetString() ?? string.Empty,
             };
         }
     }
