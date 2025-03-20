@@ -56,38 +56,20 @@ const fetchBooks = async () => {
                         <p><strong>Author:</strong> ${book.author}</p>
                         <p><strong>Publisher:</strong> ${book.publisher}</p>
                         <p><strong>Likes:</strong> ${book.likes}</p>
-                        <div>
-                            <strong>Reviews:</strong>
-                            <ul class="reviews-list">Loading...</ul>
-                        </div>
+                        <ul>
+                            ${book.reviews.map(review => `
+                                <li><strong>${review.username}:</strong> ${review.comment}</li>
+                            `).join('')}
+                        </ul>
                     </div>
                 </td>
             `;
 
             bookRow.addEventListener('click', async () => {
+                console.log(book);
                 const isVisible = detailsRow.style.display === '';
                 if (!isVisible) {
                     detailsRow.style.display = '';
-
-                    // Fetch reviews dynamically
-                    const reviewsList = detailsRow.querySelector('.reviews-list');
-                    reviewsList.innerHTML = '<li>Loading reviews...</li>';
-
-                    try {
-                        const reviewsResponse = await fetch(`/Review/GetReviews?avgReviews=${avgReviews}`);
-                        const reviews = await reviewsResponse.json();
-
-                        if (reviews.length === 0) {
-                            reviewsList.innerHTML = '<li>No reviews found.</li>';
-                        } else {
-                            reviewsList.innerHTML = reviews
-                                .map(review => `<li><strong>${review.username}:</strong> ${review.comment}</li>`)
-                                .join('');
-                        }
-                    } catch (error) {
-                        console.error('Error fetching reviews:', error);
-                        reviewsList.innerHTML = '<li>Error loading reviews.</li>';
-                    }
                 } else {
                     detailsRow.style.display = 'none';
                 }
