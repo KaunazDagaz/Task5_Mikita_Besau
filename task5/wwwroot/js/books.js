@@ -70,7 +70,6 @@ async function fetchBooks() {
                                 </div>
                                 <hr class="my-2">
                                 <div class="reviews-section">
-                                    <h6 class="mb-2">Reviews:</h6>
                                     <ul class="list-unstyled mb-0">
                                         ${book.reviews.map(review => `
                                             <li class="mb-2 pb-2 border-bottom border-light">
