@@ -1,15 +1,61 @@
-﻿<div class="fixed-top bg-white p-3 shadow-sm">
-    <div class="d-flex align-items-center gap-2">
-        <input type="number" id="seed-input" class="form-control w-auto" placeholder="Enter a seed value" />
-        <label for="avg-likes-slider" class="form-label mb-0">Average Likes:</label>
-        <input type="range" id="avg-likes-slider" class="form-range w-auto" min="0" max="100" step="0.1" value="50" />
-        <span id="avg-likes-value" class="fw-bold">50</span>
-        <label for="avg-reviews-slider" class="form-label mb-0">Average Reviews:</label>
-        <input type="range" id="avg-reviews-slider" class="form-range w-auto" min="0" max="10" step="0.1" value="5" />
-        <span id="avg-reviews-value" class="fw-bold">5</span>
-        <button id="load-books-button" class="btn btn-primary">Load Books</button>
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+@{
+    var currentCulture = HttpContextAccessor.HttpContext?.Features.Get<Microsoft.AspNetCore.Localization.IRequestCultureFeature>()?.RequestCulture.Culture.Name ?? "en-US";
+    var selectedEN = currentCulture == "en-US" ? "selected" : null;
+    var selectedAZ = currentCulture == "az-Latn-AZ" ? "selected" : null;
+    var selectedRU = currentCulture == "ru-RU" ? "selected" : null;
+}
+<div class="bg-white p-3 shadow-sm sticky-top">
+    <div class="container-fluid">
+        <button class="btn btn-outline-secondary d-lg-none w-100 mb-2" type="button" data-bs-toggle="collapse" data-bs-target="#controlsCollapse" aria-expanded="false" aria-controls="controlsCollapse">
+            <i class="fas fa-sliders-h me-2"></i>@Localizer["Controls"]
+        </button>
+
+        <div class="collapse d-lg-block" id="controlsCollapse">
+            <div class="row g-3 align-items-center">
+                <div class="col-12 col-md-6 col-lg-4">
+                    <div class="d-flex align-items-center gap-2">
+                        <input type="number" id="seed-input" class="form-control" placeholder="@Localizer["SeedPlaceholder"]" />
+                        <button type="button" class="btn btn-primary" onclick="generateRandomSeed()">
+                            <i class="fas fa-random"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="col-12 col-md-6 col-lg-3">
+                    <label for="avg-likes-slider" class="form-label mb-0">@Localizer["avgLikes"]</label>
+                    <div class="d-flex align-items-center gap-2">
+                        <input type="range" id="avg-likes-slider" class="form-range" min="0" max="100" step="0.1" value="50" />
+                        <span id="avg-likes-value" class="fw-bold" style="min-width: 30px; text-align: right;">50</span>
+                    </div>
+                </div>
+
+                <div class="col-12 col-md-6 col-lg-3">
+                    <label for="avg-reviews-slider" class="form-label mb-0">@Localizer["avgReviews"]</label>
+                    <div class="d-flex align-items-center gap-2">
+                        <input type="range" id="avg-reviews-slider" class="form-range" min="0" max="10" step="0.1" value="5" />
+                        <span id="avg-reviews-value" class="fw-bold" style="min-width: 30px; text-align: right;">5</span>
+                    </div>
+                </div>
+
+                <div class="col-12 col-md-6 col-lg-2">
+                    <form id="cultureForm" asp-controller="Culture" asp-action="SetCulture" method="post">
+                        <select name="culture" id="cultureSelect" class="form-select" onchange="document.getElementById('cultureForm').submit();">
+                            <option value="en-US" selected="@selectedEN">English</option>
+                            <option value="az-Latn-AZ" selected="@selectedAZ">Azərbaycan</option>
+                            <option value="ru-RU" selected="@selectedRU">Русский</option>
+                        </select>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
-
 <script src="~/js/updateDisplayedLikes.js"></script>
 <script src="~/js/updateDisplayedReviews.js"></script>
+<script src="~/js/utils.js"></script>
+<script src="~/js/processError.js"></script>
+<script src="~/js/books.js"></script>
+<script src="~/js/loadBooks.js"></script>

@@ -1,32 +1,46 @@
 ﻿@model IEnumerable<task5.Models.BookViewModel>
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
 
 @{
     ViewData["Title"] = "Books";
 }
 
-<body>
-    <div class="container mt-4">
-        <h1 class="mb-4">Books</h1>
+@await Html.PartialAsync("_Menu")
 
-        @await Html.PartialAsync("_Menu")
+<div class="container mt-4">
+    <div id="error-message" class="alert alert-danger d-none" role="alert"></div>
+    <div class="card shadow-lg">
+        <div class="card-header bg-dark text-white">
+            <h5 class="mb-0">@Localizer["Books"]</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="bg-secondary text-white">
+                        <tr>
+                            <th class="text-center" style="width: 5%">#</th>
+                            <th style="width: 15%">@Localizer["ISBN"]</th>
+                            <th style="width: 35%">@Localizer["Title"]</th>
+                            <th style="width: 25%">@Localizer["Author"]</th>
+                            <th style="width: 20%">@Localizer["Publisher"]</th>
+                        </tr>
+                    </thead>
+                    <tbody id="book-list"></tbody>
+                </table>
+            </div>
 
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>ISBN</th>
-                    <th>Title</th>
-                    <th>Author</th>
-                    <th>Publisher</th>
-                </tr>
-            </thead>
-            <tbody id="book-list">
-            </tbody>
-        </table>
-
-        <div id="loading" class="text-center" style="display: none;">Loading...</div>
+            <div class="d-md-none" id="mobile-book-list"></div>
+        </div>
     </div>
+    <div id="loading" class="text-center mt-3 d-none">
+        <div class="spinner-border text-primary" role="status"></div>
+        <p class="mt-2">Loading...</p>
+    </div>
+</div>
 
-    <script src="~/js/loadBooks.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0/js/bootstrap.bundle.min.js"></script>
-</body>
+<script src="~/js/utils.js"></script>
+<script src="~/js/processError.js"></script>
+<script src="~/js/books.js"></script>
+<script src="~/js/loadBooks.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0/js/bootstrap.bundle.min.js"></script>

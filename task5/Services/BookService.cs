@@ -1,65 +1,82 @@
-﻿using DotNetEnv;
-using System.Globalization;
+﻿using Bogus;
 using task5.Models;
 using task5.Services.IServices;
-using task5.Utils;
-using task5.Utils.IUtils;
+using Microsoft.AspNetCore.Localization;
 
 namespace task5.Services
 {
     public class BookService : IBookService
     {
-        private readonly HttpClient httpClient;
-        private readonly static string culture = CultureInfo.CurrentCulture.Name;
-        private readonly static string baseUrl = Env.GetString("FAKER_API_BASE_URL");
-        private readonly IParser parser = new Parser();
-        private readonly Random random = new Random();
+        private readonly IHttpContextAccessor httpContextAccessor;
+        private readonly IImageProcessingService imageProcessingService;
+        private readonly Random random = new();
 
-        public BookService(HttpClient httpClient)
+        public BookService(IHttpContextAccessor httpContextAccessor, IImageProcessingService imageProcessingService)
         {
-            this.httpClient = httpClient;
+            this.httpContextAccessor = httpContextAccessor;
+            this.imageProcessingService = imageProcessingService;
         }
 
-        public async Task<List<BookViewModel>> GenerateBooksAsync(int count, int seed, float avgLikes, float avgReviews)
+        public List<BookViewModel> GenerateBooks(int count, int seed, float avgLikes, float avgReviews)
         {
-            string booksRequestUrl = $"{baseUrl}/books?_quantity={count}&_locale={culture}&_seed={seed}";
-            string jsonResponse = await FetchDataAsync(booksRequestUrl);
-            var books = parser.ParseBooks(jsonResponse, avgLikes, new List<ReviewViewModel>());
-
-            int totalReviews = books.Sum(book => CalculateReviewCount(avgReviews));
-            string reviewsRequestUrl = $"{baseUrl}/texts?_quantity={totalReviews}&_locale={culture}&_characters=50";
-            var allReviews = await FetchAndParseReviewsAsync(reviewsRequestUrl);
-
-            var reviewIndex = 0;
+            string culture = GetCulture();
+            var bookFaker = CreateBookFaker(seed, culture);
+            var books = bookFaker.Generate(count);
+            var reviewFaker = CreateReviewFaker(seed, culture);
             foreach (var book in books)
             {
-                int countReviews = CalculateReviewCount(avgReviews);
-                book.Reviews = allReviews.Skip(reviewIndex).Take(countReviews).ToList();
-                reviewIndex += countReviews;
+                PopulateBookLikesAndReviews(book, reviewFaker, avgLikes, avgReviews);
+                book.CoverImageUrl = imageProcessingService.GenerateBookCoverImage(book).Result;
             }
-
             return books;
         }
 
-        private int CalculateReviewCount(float avgReviews)
+        private string GetCulture()
         {
-            int baseReviews = (int)avgReviews;
-            float extraProbability = avgReviews - baseReviews;
-            return random.NextDouble() < extraProbability ? baseReviews + 1 : baseReviews;
+            var requestCulture = httpContextAccessor.HttpContext?.Features.Get<IRequestCultureFeature>();
+            return requestCulture?.RequestCulture.Culture.Name ?? "en-US";
         }
 
-        private async Task<List<ReviewViewModel>> FetchAndParseReviewsAsync(string requestUrl)
+        private Faker<BookViewModel> CreateBookFaker(int seed, string culture)
         {
-            string jsonResponse = await FetchDataAsync(requestUrl);
-            return parser.ParseReviews(jsonResponse);
+            return new Faker<BookViewModel>(culture.Split('-')[0])
+                .UseSeed(seed)
+                .RuleFor(b => b.ISBN, f => f.Random.Replace("978-#-##-######-#"))
+                .RuleFor(b => b.Title, f => $"{f.Commerce.ProductAdjective()} {f.Commerce.Product()}")
+                .RuleFor(b => b.Author, f => f.Name.FullName())
+                .RuleFor(b => b.Publisher, f => f.Company.CompanyName());
         }
 
-        private async Task<string> FetchDataAsync(string requestUrl)
+        private Faker<ReviewViewModel> CreateReviewFaker(int seed, string culture)
         {
-            var response = await httpClient.GetAsync(requestUrl);
-            if (!response.IsSuccessStatusCode)
-                throw new HttpRequestException($"Failed to fetch data: {response.StatusCode}");
-            return await response.Content.ReadAsStringAsync();
+            return new Faker<ReviewViewModel>(culture.Split('-')[0])
+                .RuleFor(r => r.Username, f => f.Internet.UserName())
+                .RuleFor(r => r.Comment, f =>
+                {
+                    if (culture.StartsWith("en"))
+                    {
+                        return f.Rant.Review();
+                    }
+                    else
+                    {
+                        return f.Lorem.Sentence(8);
+                    }
+                });
+        }
+
+        private void PopulateBookLikesAndReviews(BookViewModel book, Faker<ReviewViewModel> reviewFaker, float avgLikes, float avgReviews)
+        {
+            int countReviews = CalculateProbability(avgReviews);
+            book.Reviews = reviewFaker.Generate(countReviews);
+            int countLikes = CalculateProbability(avgLikes);
+            book.Likes = countLikes;
+        }
+
+        private int CalculateProbability(float avg)
+        {
+            int baseValue = (int)avg;
+            float extraProbability = avg - baseValue;
+            return random.NextDouble() < extraProbability ? baseValue + 1 : baseValue;
         }
     }
 }
