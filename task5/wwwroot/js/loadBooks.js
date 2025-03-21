@@ -1,105 +1,96 @@
-﻿let page = 0;
-let seed = null;
-let rowNumber = 1;
-let avgLikes = 50.0;
-let avgReviews = 5.0;
+﻿let isLoading = false;
+function initialize() {
+    hideError();
+    const seedInput = document.getElementById('seed-input');
+    const avgLikesSlider = document.getElementById('avg-likes-slider');
+    const avgReviewsSlider = document.getElementById('avg-reviews-slider');
+    const avgLikesValue = document.getElementById('avg-likes-value');
+    const avgReviewsValue = document.getElementById('avg-reviews-value');
 
-const fetchBooks = async () => {
-    if (seed === null) {
-        const seedInput = document.getElementById('seed-input');
-        const avgLikesSlider = document.getElementById('avg-likes-slider');
-        const avgReviewsSlider = document.getElementById('avg-reviews-slider');
-        seed = seedInput.value.trim();
-        avgLikes = parseFloat(avgLikesSlider.value);
-        avgReviews = parseFloat(avgReviewsSlider.value);
-
-        if (!seed) {
-            alert('Please enter a seed value.');
-            return;
-        }
-
-        document.getElementById('book-list').innerHTML = '';
-        page = 0;
-        rowNumber = 1;
+    if (!seedInput || !avgLikesSlider || !avgReviewsSlider || !avgLikesValue || !avgReviewsValue) {
+        displayError('One or more elements are not found in the DOM.');
+        return;
     }
 
-    const loading = document.getElementById('loading');
-    loading.style.display = 'block';
+    const storedSeed = localStorage.getItem('seed');
+    const storedAvgLikes = localStorage.getItem('avgLikes');
+    const storedAvgReviews = localStorage.getItem('avgReviews');
 
-    try {
-        const response = await fetch(`/Book/LoadBooks?count=20&seed=${seed + page}&avgLikes=${avgLikes}&avgReviews=${avgReviews}`);
-        const newBooks = await response.json();
+    if (storedSeed !== null) {
+        seedInput.value = storedSeed;
+    } else {
+        const randomSeed = Math.floor(Math.random() * 10000);
+        seedInput.value = randomSeed;
+        localStorage.setItem('seed', randomSeed);
+    }
 
-        const bookList = document.getElementById('book-list');
+    if (storedAvgLikes !== null) {
+        avgLikesSlider.value = storedAvgLikes;
+        avgLikesValue.textContent = storedAvgLikes;
+    } else {
+        avgLikesSlider.value = avgLikes;
+        avgLikesValue.textContent = avgLikes;
+        localStorage.setItem('avgLikes', avgLikes);
+    }
 
-        newBooks.forEach(book => {
-            const bookRow = document.createElement('tr');
-            bookRow.classList.add('book-row');
+    if (storedAvgReviews !== null) {
+        avgReviewsSlider.value = storedAvgReviews;
+        avgReviewsValue.textContent = storedAvgReviews;
+    } else {
+        avgReviewsSlider.value = avgReviews;
+        avgReviewsValue.textContent = avgReviews;
+        localStorage.setItem('avgReviews', avgReviews);
+    }
 
-            bookRow.innerHTML = `
-                <td class="fw-bold">${rowNumber++}</td>
-                <td>${book.isbn}</td>
-                <td>${book.title}</td>
-                <td>${book.author}</td>
-                <td>${book.publisher}</td>
-            `;
+    seedInput.addEventListener('input', () => {
+        localStorage.setItem('seed', seedInput.value);
+        debouncedHandleInputChange();
+    });
+    avgLikesSlider.addEventListener('input', () => {
+        localStorage.setItem('avgLikes', avgLikesSlider.value);
+        avgLikesValue.textContent = avgLikesSlider.value;
+        debouncedHandleInputChange();
+    });
+    avgReviewsSlider.addEventListener('input', () => {
+        localStorage.setItem('avgReviews', avgReviewsSlider.value);
+        avgReviewsValue.textContent = avgReviewsSlider.value;
+        debouncedHandleInputChange();
+    });
 
-            const detailsRow = document.createElement('tr');
-            detailsRow.classList.add('details-row');
-            detailsRow.style.display = 'none';
+    setupInfiniteScroll();
+    fetchBooks();
+}
 
-            detailsRow.innerHTML = `
-                <td colspan="5">
-                    <div class="p-3 bg-light">
-                        <p><strong>ISBN:</strong> ${book.isbn}</p>
-                        <p><strong>Title:</strong> ${book.title}</p>
-                        <p><strong>Author:</strong> ${book.author}</p>
-                        <p><strong>Publisher:</strong> ${book.publisher}</p>
-                        <p><strong>Likes:</strong> ${book.likes}</p>
-                        <ul>
-                            ${book.reviews.map(review => `
-                                <li><strong>${review.username}:</strong> ${review.comment}</li>
-                            `).join('')}
-                        </ul>
-                    </div>
-                </td>
-            `;
+function setupInfiniteScroll() {
+    const sentinel = document.createElement('div');
+    sentinel.id = 'scroll-sentinel';
+    document.body.appendChild(sentinel);
 
-            bookRow.addEventListener('click', async () => {
-                console.log(book);
-                const isVisible = detailsRow.style.display === '';
-                if (!isVisible) {
-                    detailsRow.style.display = '';
-                } else {
-                    detailsRow.style.display = 'none';
-                }
+    const observer = new IntersectionObserver(entries => {
+        if (entries[0].isIntersecting && !isLoading) {
+            isLoading = true;
+            fetchBooks().finally(() => {
+                isLoading = false;
             });
-
-            bookList.appendChild(bookRow);
-            bookList.appendChild(detailsRow);
-        });
-
-        page++;
-    } catch (error) {
-        console.error('Error fetching books:', error);
-    } finally {
-        loading.style.display = 'none';
-    }
-};
-
-const initialize = () => {
-    document.getElementById('load-books-button').addEventListener('click', () => {
-        page = 0;
-        seed = null;
-        rowNumber = 1;
-        fetchBooks();
-    });
-
-    window.addEventListener('scroll', () => {
-        if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 2) {
-            fetchBooks();
         }
     });
-};
 
-initialize();
+    observer.observe(sentinel);
+}
+
+function generateRandomSeed() {
+    const randomSeed = Math.floor(Math.random() * 1000000);
+    document.getElementById('seed-input').value = randomSeed;
+    localStorage.setItem('seed', randomSeed);
+    debouncedHandleInputChange();
+}
+
+function handleInputChange() {
+    page = 0;
+    seed = null;
+    rowNumber = 1;
+    fetchBooks();
+}
+const debouncedHandleInputChange = debounce(handleInputChange, 1000);
+
+document.addEventListener('DOMContentLoaded', initialize);

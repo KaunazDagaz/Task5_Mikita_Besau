@@ -18,9 +18,9 @@ namespace task5.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> LoadBooks(int count, int seed, float avgLikes, float avgReviews)
+        public IActionResult LoadBooks(int count, int seed, float avgLikes, float avgReviews)
         {
-            var books = await bookService.GenerateBooksAsync(count, seed, avgLikes, avgReviews);
+            var books = bookService.GenerateBooks(count, seed, avgLikes, avgReviews);
             return Json(books);
         }
     }

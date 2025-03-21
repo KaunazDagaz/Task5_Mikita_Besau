@@ -8,5 +8,6 @@
         public required string Publisher { get; set; }
         public int Likes { get; set; }
         public List<ReviewViewModel>? Reviews { get; set; }
+        public string? CoverImageUrl { get; set; }
     }
 }
