@@ -1,4 +1,5 @@
-﻿using SkiaSharp;
+﻿using DotNetEnv;
+using SkiaSharp;
 using task5.Models;
 using task5.Services.IServices;
 
@@ -9,6 +10,7 @@ public class ImageProcessingService : IImageProcessingService
     private static readonly SKColor overlayColor = new SKColor(0, 0, 0, 180);
     private static readonly SKColor textColor = SKColors.White;
     private static readonly SKTypeface typeface = SKTypeface.FromFamilyName("Arial", SKFontStyle.Bold);
+    private static readonly string imageGeneratorUrl = Env.GetString("PIC_SUM_URL");
 
     public ImageProcessingService(HttpClient httpClient)
     {
@@ -17,7 +19,7 @@ public class ImageProcessingService : IImageProcessingService
 
     public async Task<string> GenerateBookCoverImage(BookViewModel book)
     {
-        var imageUrl = $"https://picsum.photos/seed/{book.ISBN}/400/600";
+        var imageUrl = $"{imageGeneratorUrl}/{book.ISBN}/400/600";
         using var memoryStream = new MemoryStream();
         using var httpStream = await httpClient.GetStreamAsync(imageUrl).ConfigureAwait(false);
         await httpStream.CopyToAsync(memoryStream).ConfigureAwait(false);
