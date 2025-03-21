@@ -123,6 +123,9 @@
   <data name="avgReviews" xml:space="preserve">
     <value>Rəylər</value>
   </data>
+  <data name="Controls" xml:space="preserve">
+    <value>Nəzarətlər</value>
+  </data>
   <data name="SeedPlaceholder" xml:space="preserve">
     <value>Toxum dəyərini daxil edin</value>
   </data>

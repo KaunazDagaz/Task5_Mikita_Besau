@@ -123,6 +123,9 @@
   <data name="avgReviews" xml:space="preserve">
     <value>Обзоры</value>
   </data>
+  <data name="Controls" xml:space="preserve">
+    <value>Управление</value>
+  </data>
   <data name="SeedPlaceholder" xml:space="preserve">
     <value>Введите ключ генерации</value>
   </data>
