@@ -7,8 +7,6 @@ using Microsoft.AspNetCore.Localization;
 
 var builder = WebApplication.CreateBuilder(args);
 
-Env.Load(".env");
-
 builder.Services.AddControllersWithViews()
     .AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix);
 builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
@@ -27,6 +25,11 @@ builder.Services.AddScoped<IBookService, BookService>();
 builder.Services.AddSingleton<IImageProcessingService, ImageProcessingService>();
 
 var app = builder.Build();
+
+if (app.Environment.IsDevelopment())
+{
+    Env.Load(".env");
+}
 
 app.UseRequestLocalization();
 

@@ -10,7 +10,7 @@ public class ImageProcessingService : IImageProcessingService
     private static readonly SKColor overlayColor = new SKColor(0, 0, 0, 180);
     private static readonly SKColor textColor = SKColors.White;
     private static readonly SKTypeface typeface = SKTypeface.FromFamilyName("Arial", SKFontStyle.Bold);
-    private static readonly string imageGeneratorUrl = Env.GetString("PIC_SUM_URL");
+    private static readonly string imageGeneratorUrl = Environment.GetEnvironmentVariable("PIC_SUM_URL") ?? Env.GetString("PIC_SUM_URL");
 
     public ImageProcessingService(HttpClient httpClient)
     {
