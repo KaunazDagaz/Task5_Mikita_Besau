@@ -20,7 +20,7 @@ function exportBooksToCSV(event) {
     debounce(() => { isExporting = false; }, 1000);
     try {
         if (loadedBooks.length === 0) {
-            displayError("No books to export. Please load books first.");
+            displayError(getLocalizedString('empty'));
             return;
         }
         const booksForExport = loadedBooks.map(book => ({
@@ -38,7 +38,7 @@ function exportBooksToCSV(event) {
         downloadCSV(csv, filename);
 
     } catch (error) {
-        displayError("Error exporting books: " + error.message);
+        displayError(getLocalizedString('export') + error.message);
     }
     return false;
 }

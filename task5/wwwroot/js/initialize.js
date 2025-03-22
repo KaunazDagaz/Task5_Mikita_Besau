@@ -7,11 +7,6 @@ function initialize() {
     const avgLikesValue = document.getElementById('avg-likes-value');
     const avgReviewsValue = document.getElementById('avg-reviews-value');
 
-    if (!seedInput || !avgLikesSlider || !avgReviewsSlider || !avgLikesValue || !avgReviewsValue) {
-        displayError('One or more elements are not found in the DOM.');
-        return;
-    }
-
     const storedSeed = localStorage.getItem('seed');
     const storedAvgLikes = localStorage.getItem('avgLikes');
     const storedAvgReviews = localStorage.getItem('avgReviews');

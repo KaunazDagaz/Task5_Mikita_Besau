@@ -12,5 +12,11 @@ function hideError() {
     }
 }
 
+function getLocalizedString(key) {
+    const localizationElement = document.getElementById('js-localization');
+    return localizationElement.getAttribute('data-error-' + key);
+}
+
 window.displayError = displayError;
 window.hideError = hideError;
+window.getLocalizedString = getLocalizedString;

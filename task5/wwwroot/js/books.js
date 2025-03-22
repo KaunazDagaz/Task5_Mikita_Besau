@@ -9,7 +9,7 @@ function initializeSeed() {
     const seedInput = document.getElementById('seed-input');
     seed = seedInput.value.trim();
     if (!seed) {
-        displayError('Please enter a valid seed value.');
+        displayError(getLocalizedString('seed'));
         return false;
     }
     document.getElementById('book-list').innerHTML = '';
@@ -121,7 +121,7 @@ async function fetchBooks() {
         addBooksToLoadedList(books);
         page++;
     } catch (error) {
-        displayError('Error fetching books:', error);
+        displayError(getLocalizedString('fetching'), error);
     } finally {
         loading.classList.add('d-none');
     }
