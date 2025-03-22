@@ -1,11 +1,15 @@
 ﻿function displayError(message) {
-    const errorMessage = document.getElementById('error-message');
-    errorMessage.textContent = message;
+    const errorElement = document.getElementById('error-message');
+    if (errorElement) {
+        errorElement.textContent = message;
+    }
 }
 
 function hideError() {
-    const errorMessage = document.getElementById('error-message');
-    errorMessage.textContent = '';
+    const errorElement = document.getElementById('error-message');
+    if (errorElement) {
+        errorElement.textContent = "";
+    }
 }
 
 window.displayError = displayError;

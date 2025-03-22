@@ -9,7 +9,9 @@
 @await Html.PartialAsync("_Menu")
 
 <div class="container mt-4">
-    <div id="error-message" class="alert alert-danger d-none" role="alert"></div>
+    <div class="row justify-content-center">
+        <div id="error-message" class="alert text-center fixed-height-alert" style="color: red" role="alert"></div>
+    </div>
     <div class="card shadow-lg">
         <div class="card-header bg-dark text-white">
             <h5 class="mb-0">@Localizer["Books"]</h5>
@@ -35,12 +37,11 @@
     </div>
     <div id="loading" class="text-center mt-3 d-none">
         <div class="spinner-border text-primary" role="status"></div>
-        <p class="mt-2">Loading...</p>
+        <p class="mt-2">@Localizer["Loading"]</p>
     </div>
 </div>
 
 <script src="~/js/utils.js"></script>
 <script src="~/js/processError.js"></script>
 <script src="~/js/books.js"></script>
-<script src="~/js/loadBooks.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0/js/bootstrap.bundle.min.js"></script>
+<script src="~/js/initialize.js"></script>
