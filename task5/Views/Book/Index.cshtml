@@ -31,14 +31,19 @@
                     <tbody id="book-list"></tbody>
                 </table>
             </div>
-
-            <div class="d-md-none" id="mobile-book-list"></div>
         </div>
     </div>
     <div id="loading" class="text-center mt-3 d-none">
         <div class="spinner-border text-primary" role="status"></div>
         <p class="mt-2">@Localizer["Loading"]</p>
     </div>
+</div>
+
+<div id="js-localization"
+     data-error-seed="@Localizer["ValidSeed"]"
+     data-error-fetching="@Localizer["FetchingBooks"]"
+     data-error-empty="@Localizer["NoBooks"]"
+     data-error-export="@Localizer["ExportBooks"]"
 </div>
 
 <script src="~/js/utils.js"></script>

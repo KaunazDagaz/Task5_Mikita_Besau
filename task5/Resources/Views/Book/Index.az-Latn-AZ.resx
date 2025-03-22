@@ -123,16 +123,28 @@
   <data name="Books" xml:space="preserve">
     <value>Kitablar</value>
   </data>
+  <data name="ExportBooks" xml:space="preserve">
+    <value>Kitabları ixrac edərkən xəta baş verdi: </value>
+  </data>
+  <data name="FetchingBooks" xml:space="preserve">
+    <value>Kitabları əldə edərkən xəta baş verdi: </value>
+  </data>
   <data name="ISBN" xml:space="preserve">
     <value>ISBN</value>
   </data>
   <data name="Loading" xml:space="preserve">
     <value>Yüklənir...</value>
   </data>
+  <data name="NoBooks" xml:space="preserve">
+    <value>İxrac ediləcək kitab yoxdur. Əvvəlcə kitabları yükləyin.</value>
+  </data>
   <data name="Publisher" xml:space="preserve">
     <value>Nəşriyyatçı</value>
   </data>
   <data name="Title" xml:space="preserve">
     <value>Başlıq</value>
+  </data>
+  <data name="ValidSeed" xml:space="preserve">
+    <value>Lütfən, etibarlı toxum dəyəri daxil edin.</value>
   </data>
 </root>
