@@ -89,8 +89,10 @@ function handleInputChange() {
     page = 0;
     seed = null;
     rowNumber = 1;
+    resetLoadedBooks();
     fetchBooks();
 }
+
 const debouncedHandleInputChange = debounce(handleInputChange, 1000);
 
 document.addEventListener('DOMContentLoaded', initialize);

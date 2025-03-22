@@ -93,21 +93,19 @@ function renderReviews(reviews) {
     `).join('');
 }
 
-function appendBookToList(book, bookList) {
-    const bookRow = createBookRow(book, rowNumber++);
-    const detailsRow = createDetailsRow(book);
-
-    bookRow.addEventListener('click', () => {
-        detailsRow.style.display = detailsRow.style.display === '' ? 'none' : '';
-    });
-
-    bookList.appendChild(bookRow);
-    bookList.appendChild(detailsRow);
-}
-
 async function fetchBooksFromAPI(seedValue, pageNumber, filters) {
     return fetch(`/Book/LoadBooks?count=20&seed=${seedValue + pageNumber}&avgLikes=${filters.avgLikes}&avgReviews=${filters.avgReviews}`)
         .then(response => response.json());
+}
+
+function appendBookToList(book, bookList) {
+    const bookRow = createBookRow(book, rowNumber++);
+    const detailsRow = createDetailsRow(book);
+    bookRow.addEventListener('click', () => {
+        detailsRow.style.display = detailsRow.style.display === '' ? 'none' : '';
+    });
+    bookList.appendChild(bookRow);
+    bookList.appendChild(detailsRow);
 }
 
 async function fetchBooks() {
@@ -119,8 +117,8 @@ async function fetchBooks() {
     try {
         const books = await fetchBooksFromAPI(seed, page, filters);
         const bookList = document.getElementById('book-list');
-
         books.forEach(book => appendBookToList(book, bookList));
+        addBooksToLoadedList(books);
         page++;
     } catch (error) {
         displayError('Error fetching books:', error);

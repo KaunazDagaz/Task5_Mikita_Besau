@@ -126,6 +126,9 @@
   <data name="Controls" xml:space="preserve">
     <value>Controls</value>
   </data>
+  <data name="CSV" xml:space="preserve">
+    <value>CSV</value>
+  </data>
   <data name="SeedPlaceholder" xml:space="preserve">
     <value>Enter a seed value</value>
   </data>

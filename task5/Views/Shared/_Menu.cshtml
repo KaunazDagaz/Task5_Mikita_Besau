@@ -41,13 +41,18 @@
                 </div>
 
                 <div class="col-12 col-md-6 col-lg-2">
-                    <form id="cultureForm" asp-controller="Culture" asp-action="SetCulture" method="post">
-                        <select name="culture" id="cultureSelect" class="form-select" onchange="document.getElementById('cultureForm').submit();">
-                            <option value="en-US" selected="@selectedEN">English</option>
-                            <option value="az-Latn-AZ" selected="@selectedAZ">Azərbaycan</option>
-                            <option value="ru-RU" selected="@selectedRU">Русский</option>
-                        </select>
-                    </form>
+                    <div class="d-flex gap-2">
+                        <form id="cultureForm" asp-controller="Culture" asp-action="SetCulture" method="post" class="flex-grow-1">
+                            <select name="culture" id="cultureSelect" class="form-select" onchange="document.getElementById('cultureForm').submit();">
+                                <option value="en-US" selected="@selectedEN">English</option>
+                                <option value="az-Latn-AZ" selected="@selectedAZ">Azərbaycan</option>
+                                <option value="ru-RU" selected="@selectedRU">Русский</option>
+                            </select>
+                        </form>
+                        <button type="button" class="btn btn-success" id="export-csv-btn" onclick="exportBooksToCSV()">
+                            <i class="fas fa-file-csv"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -57,5 +62,6 @@
 <script src="~/js/updateDisplayedReviews.js"></script>
 <script src="~/js/utils.js"></script>
 <script src="~/js/processError.js"></script>
+<script src="~/js/exportBooks.js"></script>
 <script src="~/js/books.js"></script>
 <script src="~/js/initialize.js"></script>
